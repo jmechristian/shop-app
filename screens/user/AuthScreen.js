@@ -7,22 +7,15 @@ import {
   Button
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useDispatch } from 'react-redux';
 
 import Input from '../../components/UI/Input';
 import Card from '../../components/UI/Card';
 import Colors from '../../constants/Colors';
-import * as authActions from '../../store/actions/auth';
 
 const AuthScreen = props => {
-  const dispatch = useDispatch();
-  const signupHandler = () => {
-    dispatch(authActions.signup());
-  };
-
   return (
     <KeyboardAvoidingView
-      behavior='padding'
+      behavior="padding"
       keyboardVerticalOffset={50}
       style={styles.screen}
     >
@@ -30,34 +23,34 @@ const AuthScreen = props => {
         <Card style={styles.authContainer}>
           <ScrollView>
             <Input
-              id='email'
-              label='E-Mail'
-              keyboardType='email-address'
+              id="email"
+              label="E-Mail"
+              keyboardType="email-address"
               required
               email
-              autoCapitalize='none'
-              errorMessage='Please enter a valid email address.'
+              autoCapitalize="none"
+              errorMessage="Please enter a valid email address."
               onInputChange={() => {}}
-              initialValue=''
+              initialValue=""
             />
             <Input
-              id='password'
-              label='Password'
-              keyboardType='default'
+              id="password"
+              label="Password"
+              keyboardType="default"
               secureTextEntry
               required
               minLength={5}
-              autoCapitalize='none'
-              errorMessage='Please enter a valid password.'
+              autoCapitalize="none"
+              errorMessage="Please enter a valid password."
               onInputChange={() => {}}
-              initialValue=''
+              initialValue=""
             />
             <View style={styles.buttonContainer}>
-              <Button title='Login' color={Colors.primary} onPress={() => {}} />
+              <Button title="Login" color={Colors.primary} onPress={() => {}} />
             </View>
             <View style={styles.buttonContainer}>
               <Button
-                title='Switch to Sign Up'
+                title="Switch to Sign Up"
                 color={Colors.accent}
                 onPress={() => {}}
               />
