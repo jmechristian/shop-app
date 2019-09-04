@@ -1,10 +1,12 @@
-import React, { useReducer, useCallback } from 'react';
+import React, { useState, useReducer, useCallback, useEffect } from 'react';
 import {
   ScrollView,
   View,
   KeyboardAvoidingView,
   StyleSheet,
-  Button
+  Button,
+  ActivityIndicator,
+  Alert
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useDispatch } from 'react-redux';
@@ -40,6 +42,9 @@ const formReducer = (state, action) => {
 };
 
 const AuthScreen = props => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSignup, setIsSignup] = useState(false);
+  const [error, setError] = useState();
   const dispatch = useDispatch();
 
   const [formState, dispatchFormState] = useReducer(formReducer, {
@@ -54,13 +59,34 @@ const AuthScreen = props => {
     formIsValid: false
   });
 
-  const signupHandler = () => {
-    dispatch(
-      authActions.signup(
+  useEffect(() => {
+    if (error) {
+      Alert.alert('An Error Occured!', error, [{ text: 'Okay' }]);
+    }
+  }, [error]);
+
+  const authHandler = async () => {
+    let action;
+    if (isSignup) {
+      action = authActions.signup(
         formState.inputValues.email,
         formState.inputValues.password
-      )
-    );
+      );
+    } else {
+      action = authActions.login(
+        formState.inputValues.email,
+        formState.inputValues.password
+      );
+    }
+    setError(null);
+    setIsLoading(true);
+    try {
+      await dispatch(action);
+      props.navigation.navigate('Shop');
+    } catch (err) {
+      setError(err.message);
+      setIsLoading(false);
+    }
   };
 
   const inputChangeHandler = useCallback(
@@ -77,7 +103,7 @@ const AuthScreen = props => {
 
   return (
     <KeyboardAvoidingView
-      behavior="padding"
+      behavior='padding'
       keyboardVerticalOffset={50}
       style={styles.screen}
     >
@@ -85,40 +111,46 @@ const AuthScreen = props => {
         <Card style={styles.authContainer}>
           <ScrollView>
             <Input
-              id="email"
-              label="E-Mail"
-              keyboardType="email-address"
+              id='email'
+              label='E-Mail'
+              keyboardType='email-address'
               required
               email
-              autoCapitalize="none"
-              errorText="Please enter a valid email address."
+              autoCapitalize='none'
+              errorText='Please enter a valid email address.'
               onInputChange={inputChangeHandler}
-              initialValue=""
+              initialValue=''
             />
             <Input
-              id="password"
-              label="Password"
-              keyboardType="default"
+              id='password'
+              label='Password'
+              keyboardType='default'
               secureTextEntry
               required
               minLength={5}
-              autoCapitalize="none"
-              errorText="Please enter a valid password."
+              autoCapitalize='none'
+              errorText='Please enter a valid password.'
               onInputChange={inputChangeHandler}
-              initialValue=""
+              initialValue=''
             />
             <View style={styles.buttonContainer}>
-              <Button
-                title="Login"
-                color={Colors.primary}
-                onPress={signupHandler}
-              />
+              {isLoading ? (
+                <ActivityIndicator size='small' colors={Colors.primary} />
+              ) : (
+                <Button
+                  title={isSignup ? 'Sign Up' : 'Login'}
+                  color={Colors.primary}
+                  onPress={authHandler}
+                />
+              )}
             </View>
             <View style={styles.buttonContainer}>
               <Button
-                title="Switch to Sign Up"
+                title={`Switch to ${isSignup ? 'Login' : 'Sign Up'} `}
                 color={Colors.accent}
-                onPress={() => {}}
+                onPress={() => {
+                  setIsSignup(prevState => !prevState);
+                }}
               />
             </View>
           </ScrollView>

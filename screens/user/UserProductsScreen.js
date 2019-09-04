@@ -1,5 +1,13 @@
 import React from 'react';
-import { FlatList, Button, Platform, Alert } from 'react-native';
+import {
+  FlatList,
+  Button,
+  Platform,
+  Alert,
+  View,
+  Text,
+  StyleSheet
+} from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
@@ -16,7 +24,7 @@ const UserProductsScreen = props => {
     props.navigation.navigate('EditProduct', { productId: id });
   };
 
-  const deleteHandler = (id) => {
+  const deleteHandler = id => {
     Alert.alert('Are you sure?', 'Do you really want to delete this item?', [
       { text: 'No', style: 'default' },
       {
@@ -28,6 +36,14 @@ const UserProductsScreen = props => {
       }
     ]);
   };
+
+  if (userProducts.length === 0) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>No Products Found for You. Add some.</Text>
+      </View>
+    );
+  }
 
   return (
     <FlatList
@@ -44,14 +60,14 @@ const UserProductsScreen = props => {
         >
           <Button
             color={Colors.primary}
-            title="Edit"
+            title='Edit'
             onPress={() => {
               editProductHandler(itemData.item.id);
             }}
           />
           <Button
             color={Colors.primary}
-            title="Delete"
+            title='Delete'
             onPress={deleteHandler.bind(this, itemData.item.id)}
           />
         </ProductItem>
@@ -66,7 +82,7 @@ UserProductsScreen.navigationOptions = navData => {
     headerLeft: (
       <HeaderButtons HeaderButtonComponent={HeaderButton}>
         <Item
-          title="Menu"
+          title='Menu'
           iconName={Platform.OS === 'android' ? 'md-menu' : 'ios-menu'}
           onPress={() => {
             navData.navigation.toggleDrawer();
@@ -77,7 +93,7 @@ UserProductsScreen.navigationOptions = navData => {
     headerRight: (
       <HeaderButtons HeaderButtonComponent={HeaderButton}>
         <Item
-          title="Add"
+          title='Add'
           iconName={Platform.OS === 'android' ? 'md-create' : 'ios-create'}
           onPress={() => {
             navData.navigation.navigate('EditProduct');
